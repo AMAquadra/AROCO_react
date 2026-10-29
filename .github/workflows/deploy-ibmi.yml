@@ -1,0 +1,32 @@
+name: Deploiement IBM i via DROPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release a deployer"
+        required: true
+        default: "9.3.0.0"
+      environnement:
+        description: "Environnement cible DROPS"
+        required: true
+        default: "PROD_AROCO_HDTEST06"
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    env:
+      DROPS_CLI: 'C:\Program Files\DROPS Solutions\DROPS_CLI-26.2.0\dropsCLI\bin\drops'
+      DROPS_SERVER: 'http://localhost:5254'
+      DROPS_USER: ${{ secrets.DROPS_USER }}
+      DROPS_PASSWORD: ${{ secrets.DROPS_PASSWORD }}
+
+    steps:
+      - name: Verifier la connexion au serveur DROPS
+        shell: cmd
+        run: '"%DROPS_CLI%" healthcheck -S %DROPS_SERVER% -U %DROPS_USER% -P %DROPS_PASSWORD%'
+
+      - name: Deployer la release sur IBM i
+        shell: cmd
+        run: '"%DROPS_CLI%" executeDeployment -S %DROPS_SERVER% -U %DROPS_USER% -P %DROPS_PASSWORD% -a ARO -e ${{ inputs.environnement }} -p IBMI_DEMO_HD06 -r ${{ inputs.release }} -l -i'
