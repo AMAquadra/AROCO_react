@@ -6,11 +6,15 @@ on:
       release:
         description: "Release a deployer"
         required: true
-        default: "9.3.0.0"
+        default: "9.4.0.0"
       environnement:
         description: "Environnement cible DROPS"
         required: true
-        default: "PROD_AROCO_HDTEST06"
+        default: "QA_AROCO_HDTEST06"
+      processus:
+        description: "Processus de deploiement"
+        required: true
+        default: "IBMI_DEMO_HD06_QA"
 
 jobs:
   deploy:
@@ -29,4 +33,4 @@ jobs:
 
       - name: Deployer la release sur IBM i
         shell: cmd
-        run: '"%DROPS_CLI%" executeDeployment -S %DROPS_SERVER% -U %DROPS_USER% -P %DROPS_PASSWORD% -a ARO -e ${{ inputs.environnement }} -p IBMI_DEMO_HD06 -r ${{ inputs.release }} -l -i'
+        run: '"%DROPS_CLI%" executeDeployment -S %DROPS_SERVER% -U %DROPS_USER% -P %DROPS_PASSWORD% -a ARO -e ${{ inputs.environnement }} -p ${{ inputs.processus }} -r ${{ inputs.release }} -l -i'
